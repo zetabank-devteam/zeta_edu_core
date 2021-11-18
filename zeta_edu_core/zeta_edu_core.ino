@@ -8,6 +8,8 @@
 // user led class
 // user switch class
 // #define NO_ROS
+// 20211118 Ahn, for increasing imu publishing hz, must expand tx buffer size of arduino serial driver
+// C:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\HardwareSerial.h SERIAL_TX_BUFFER_SIZE
 void setup()
 {
     InitGPIO();
@@ -44,8 +46,8 @@ void InitSonar()
     for(int i = 0; i < NUM_SONAR; i++)
     {
         time_sonar_travel[i] = 0;
-        time_sonar_start[i] = 0;
-        distance[i] = -1.0f;
+        time_sonar_start[i]  = 0;
+        distance[i]          = -1.0f;
     }
 }
 
@@ -63,6 +65,10 @@ void InitGPIO()
     pinMode(RS_ECHO3,     INPUT);
     pinMode(RS_ECHO4,     INPUT);
     pinMode(COM_IND,      OUTPUT);
+    pinMode(LINE_DETECT1, INPUT);
+    pinMode(LINE_DETECT2, INPUT);
+    pinMode(LINE_DETECT3, INPUT);
+    pinMode(LINE_DETECT4, INPUT);
 }
 
 void InitROS()
@@ -73,9 +79,12 @@ void InitROS()
     nh.advertise(sonar_publisher);
     nh.advertise(hw_version_publisher);
     nh.advertise(fw_version_publisher);
+    nh.advertise(line_detector_publisher);
     imu_msg.header.frame_id = "imu_link";
     sonar_msg.data = (float*)malloc(sizeof(float) * NUM_SONAR);
     sonar_msg.data_length = NUM_SONAR;
+    line_detector_msg.data = (uint8_t*)malloc(sizeof(uint8_t) * NUM_LINE_DETECTOR);
+    line_detector_msg.data_length = NUM_LINE_DETECTOR;
     hw_version_msg.data = HW_VERSION;
     fw_version_msg.data = FW_VERSION;
 }
@@ -292,6 +301,47 @@ void PublishVersionInfo()
     fw_version_publisher.publish(&fw_version_msg);
 }
 
+void PublishLineDetection()
+{
+    line_detector_publisher.publish(&line_detector_msg);
+}
+
+void DetectLine()
+{
+    if(digitalRead(LINE_DETECT1))
+    {
+        line_detector_msg.data[0] = 1;
+    }
+    else
+    {
+        line_detector_msg.data[0] = 0;
+    }
+    if(digitalRead(LINE_DETECT2))
+    {
+        line_detector_msg.data[1] = 1;
+    }
+    else
+    {
+        line_detector_msg.data[1] = 0;
+    }
+    if(digitalRead(LINE_DETECT3))
+    {
+        line_detector_msg.data[2] = 1;
+    }
+    else
+    {
+        line_detector_msg.data[2] = 0;
+    }
+    if(digitalRead(LINE_DETECT4))
+    {
+        line_detector_msg.data[3] = 1;
+    }
+    else
+    {
+        line_detector_msg.data[3] = 0;
+    }
+}
+
 void BlinkLed1()
 {
     digitalWrite(USER_LED1, !digitalRead(USER_LED1));
@@ -347,6 +397,13 @@ void loop() {
         MeasureDistance();
         SendSonar();
         time_pre[task_num_sonar_measure] = time_cur;
+    }
+    time_cur = millis();
+    if(time_cur - time_pre[task_num_pub_line_detection] >= (1000 / PUB_LINE_DETECTION_FREQUENCY))
+    {
+        DetectLine();
+        PublishLineDetection();
+        time_pre[task_num_pub_line_detection] = time_cur;
     }
     time_cur = millis();
     if(time_cur - time_pre[task_num_toggle_indicator] >= (1000 / COM_IND_TOGGLE_FREQUENCY))

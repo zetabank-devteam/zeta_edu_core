@@ -50,6 +50,8 @@
 #define EXT_PWM3      PIN_PF6
 #define EXT_PWM4      PIN_PF7
 
-// @TODO add expansion pins!
-
+#define LINE_DETECT1  EXT_GPIO1
+#define LINE_DETECT2  EXT_GPIO2
+#define LINE_DETECT3  EXT_GPIO3
+#define LINE_DETECT4  EXT_GPIO4
 #endif /* ZETA_EDU_CORE_PIN_DEFINITION_H_ */
