@@ -33,8 +33,7 @@ void InitIMU()
     IMU.enableDataReadyInterrupt();
     pinMode(IMU_INT, INPUT);
     attachInterrupt(digitalPinToInterrupt(IMU_INT), GetIMU, RISING);
-    IMU.calibrateGyro(); // 캘리브레이션 시간동안 구동 & 이동 금지
-    filter.begin(50);
+    filter.begin(30);
 }
 
 void InitSonar()
@@ -95,11 +94,6 @@ void InitSerial()
     Serial2.begin(SERIAL2_SPEED);
     Serial3.begin(SERIAL3_SPEED);
     RS485.begin(RS485_SPEED);
-    while(!Serial) // wait before connect
-    {
-        ToggleComIndicator();
-        delay(1000);
-    }
 }
 
 ////////////////////////////////

@@ -1,5 +1,5 @@
-#ifndef EDU_CORE_H_
-#define EDU_CORE_H_
+#ifndef ZETA_EDU_CORE_ZETA_EDU_CORE_H_
+#define ZETA_EDU_CORE_ZETA_EDU_CORE_H_
 #define HW_VERSION "R0.1"
 #define FW_VERSION "0.1.0"
 
@@ -43,11 +43,11 @@
 #define SPEED_OF_SOUND  343.0f
 #define NUM_LINE_DETECTOR  4
 
-union 
+union
 {
     float   num;
     uint8_t bytes[4];
-}FloatToBytes; // little endian
+}FloatToBytes;  // little endian
 
 enum
 {
@@ -82,8 +82,8 @@ std_msgs::String fw_version_msg;
 ros::Publisher fw_version_publisher("core_fw_version", &fw_version_msg);
 std_msgs::UInt8MultiArray line_detector_msg;
 ros::Publisher line_detector_publisher("line_detecting", &line_detector_msg);
-volatile unsigned long time_sonar_travel[NUM_SONAR];  // Place to store traveltime of the pusle
-volatile unsigned long time_sonar_start[NUM_SONAR];
+volatile uint32_t time_sonar_travel[NUM_SONAR];  // Place to store traveltime of the pusle
+volatile uint32_t time_sonar_start[NUM_SONAR];
 float distance[NUM_SONAR];
 
-#endif /* EDU_CORE_H_ */
+#endif /* ZETA_EDU_CORE_ZETA_EDU_CORE_H_ */

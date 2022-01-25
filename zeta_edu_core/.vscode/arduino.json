@@ -1,5 +1,6 @@
 {
     "configuration": "cpu=atmega2560",
     "board": "arduino:avr:mega",
-    "sketch": "zeta_edu_core.ino"
+    "sketch": "zeta_edu_core.ino",
+    "port": "COM16"
 }
