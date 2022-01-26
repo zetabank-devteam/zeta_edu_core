@@ -280,12 +280,12 @@ void SendImu()
     imu_msg.angular_velocity.x = IMU.getGyroX_rads();
     imu_msg.angular_velocity.y = IMU.getGyroY_rads();
     imu_msg.angular_velocity.z = IMU.getGyroZ_rads();
-    imu_msg.linear_acceleration.x = IMU.getAccelX_mss();
-    imu_msg.linear_acceleration.y = IMU.getAccelY_mss();
-    imu_msg.linear_acceleration.z = IMU.getAccelZ_mss();
-    // imu_msg.linear_acceleration.x = 0.0f;
-    // imu_msg.linear_acceleration.y = 0.0f;
-    // imu_msg.linear_acceleration.z = 9.80665f;
+    // imu_msg.linear_acceleration.x = IMU.getAccelX_mss();
+    // imu_msg.linear_acceleration.y = IMU.getAccelY_mss();
+    // imu_msg.linear_acceleration.z = IMU.getAccelZ_mss();
+    imu_msg.linear_acceleration.x = 0.0f;
+    imu_msg.linear_acceleration.y = 0.0f;
+    imu_msg.linear_acceleration.z = 9.80665f;
     
     imu_publisher.publish(&imu_msg);
 #endif
