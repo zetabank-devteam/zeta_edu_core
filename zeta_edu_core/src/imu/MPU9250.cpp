@@ -447,7 +447,7 @@ int MPU9250::readSensor() {
   _axcounts = (((int16_t)_buffer[0]) << 8) | _buffer[1];  
   _aycounts = (((int16_t)_buffer[2]) << 8) | _buffer[3];
   _azcounts = (((int16_t)_buffer[4]) << 8) | _buffer[5];
-  //_tcounts = (((int16_t)_buffer[6]) << 8) | _buffer[7];
+  _tcounts = (((int16_t)_buffer[6]) << 8) | _buffer[7];
   _gxcounts = (((int16_t)_buffer[8]) << 8) | _buffer[9];
   _gycounts = (((int16_t)_buffer[10]) << 8) | _buffer[11];
   _gzcounts = (((int16_t)_buffer[12]) << 8) | _buffer[13];
