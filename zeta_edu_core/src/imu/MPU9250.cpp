@@ -451,11 +451,9 @@ int MPU9250::readSensor() {
   _gxcounts = (((int16_t)_buffer[8]) << 8) | _buffer[9];
   _gycounts = (((int16_t)_buffer[10]) << 8) | _buffer[11];
   _gzcounts = (((int16_t)_buffer[12]) << 8) | _buffer[13];
-  /*
   _hxcounts = (((int16_t)_buffer[15]) << 8) | _buffer[14];
   _hycounts = (((int16_t)_buffer[17]) << 8) | _buffer[16];
   _hzcounts = (((int16_t)_buffer[19]) << 8) | _buffer[18];
-  */
   // transform and convert to float values
   _ax = (((float)(_axcounts) * _accelScale) - _axb)*_axs;
   _ay = (((float)(_aycounts) * _accelScale) - _ayb)*_ays;
@@ -463,12 +461,16 @@ int MPU9250::readSensor() {
   _gx = ((float)(_gxcounts) * _gyroScale) - _gxb;
   _gy = ((float)(_gycounts) * _gyroScale) - _gyb;
   _gz = ((float)(_gzcounts) * _gyroScale) - _gzb;
-  /*
-  _hx = (((float)(_hxcounts) * _magScaleX) - _hxb)*_hxs;
-  _hy = (((float)(_hycounts) * _magScaleY) - _hyb)*_hys;
-  _hz = (((float)(_hzcounts) * _magScaleZ) - _hzb)*_hzs;
-  _t = ((((float) _tcounts) - _tempOffset)/_tempScale) + _tempOffset;
-  */
+  if(gyro_calibrated)
+  {
+    if(fabs(_gx) < 0.01f) _gx = 0.0f;
+    if(fabs(_gy) < 0.01f) _gy = 0.0f;
+    if(fabs(_gz) < 0.01f) _gz = 0.0f;
+  }
+  // _hx = (((float)(_hycounts) * _magScaleY) - _hyb)*_hys;
+  // _hy = (((float)(_hxcounts) * _magScaleX) - _hxb)*_hxs;
+  // _hz = (((float)(_hzcounts) * _magScaleZ) - _hzb)*_hzs * -1.0f;
+  // _t = ((((float) _tcounts) - _tempOffset)/_tempScale) + _tempOffset;
   return 1;
 }
 
