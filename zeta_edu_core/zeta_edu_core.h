@@ -1,7 +1,7 @@
 #ifndef ZETA_EDU_CORE_ZETA_EDU_CORE_H_
 #define ZETA_EDU_CORE_ZETA_EDU_CORE_H_
 #define HW_VERSION "R0.1"
-#define FW_VERSION "0.1.0"
+#define FW_VERSION "0.1.2"
 
 #include "src/configuration/pin_definition.h"
 

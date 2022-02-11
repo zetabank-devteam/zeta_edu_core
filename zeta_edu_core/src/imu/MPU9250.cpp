@@ -447,28 +447,30 @@ int MPU9250::readSensor() {
   _axcounts = (((int16_t)_buffer[0]) << 8) | _buffer[1];  
   _aycounts = (((int16_t)_buffer[2]) << 8) | _buffer[3];
   _azcounts = (((int16_t)_buffer[4]) << 8) | _buffer[5];
-  //_tcounts = (((int16_t)_buffer[6]) << 8) | _buffer[7];
+  // _tcounts = (((int16_t)_buffer[6]) << 8) | _buffer[7];
   _gxcounts = (((int16_t)_buffer[8]) << 8) | _buffer[9];
   _gycounts = (((int16_t)_buffer[10]) << 8) | _buffer[11];
   _gzcounts = (((int16_t)_buffer[12]) << 8) | _buffer[13];
-  /*
   _hxcounts = (((int16_t)_buffer[15]) << 8) | _buffer[14];
   _hycounts = (((int16_t)_buffer[17]) << 8) | _buffer[16];
   _hzcounts = (((int16_t)_buffer[19]) << 8) | _buffer[18];
-  */
   // transform and convert to float values
-  _ax = (((float)(tX[0]*_axcounts + tX[1]*_aycounts + tX[2]*_azcounts) * _accelScale) - _axb)*_axs;
-  _ay = (((float)(tY[0]*_axcounts + tY[1]*_aycounts + tY[2]*_azcounts) * _accelScale) - _ayb)*_ays;
-  _az = (((float)(tZ[0]*_axcounts + tZ[1]*_aycounts + tZ[2]*_azcounts) * _accelScale) - _azb)*_azs;
-  _gx = ((float)(tX[0]*_gxcounts + tX[1]*_gycounts + tX[2]*_gzcounts) * _gyroScale) - _gxb;
-  _gy = ((float)(tY[0]*_gxcounts + tY[1]*_gycounts + tY[2]*_gzcounts) * _gyroScale) - _gyb;
-  _gz = ((float)(tZ[0]*_gxcounts + tZ[1]*_gycounts + tZ[2]*_gzcounts) * _gyroScale) - _gzb;
-  /*
-  _hx = (((float)(_hxcounts) * _magScaleX) - _hxb)*_hxs;
-  _hy = (((float)(_hycounts) * _magScaleY) - _hyb)*_hys;
-  _hz = (((float)(_hzcounts) * _magScaleZ) - _hzb)*_hzs;
-  _t = ((((float) _tcounts) - _tempOffset)/_tempScale) + _tempOffset;
-  */
+  _ax = (((float)(_axcounts) * _accelScale) - _axb)*_axs;
+  _ay = (((float)(_aycounts) * _accelScale) - _ayb)*_ays;
+  _az = (((float)(_azcounts) * _accelScale) - _azb)*_azs;
+  _gx = ((float)(_gxcounts) * _gyroScale) - _gxb;
+  _gy = ((float)(_gycounts) * _gyroScale) - _gyb;
+  _gz = ((float)(_gzcounts) * _gyroScale) - _gzb;
+  if(gyro_calibrated)
+  {
+    if(fabs(_gx) < 0.01f) _gx = 0.0f;
+    if(fabs(_gy) < 0.01f) _gy = 0.0f;
+    if(fabs(_gz) < 0.01f) _gz = 0.0f;
+  }
+  // _hx = (((float)(_hycounts) * _magScaleY) - _hyb)*_hys;
+  // _hy = (((float)(_hxcounts) * _magScaleX) - _hxb)*_hxs;
+  // _hz = (((float)(_hzcounts) * _magScaleZ) - _hzb)*_hzs * -1.0f;
+  // _t = ((((float) _tcounts) - _tempOffset)/_tempScale) + _tempOffset;
   return 1;
 }
 
