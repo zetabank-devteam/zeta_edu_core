@@ -25,6 +25,8 @@
 #define IMU_NCS       PIN_PB0
 #define IMU_INT       PIN_PD3
 
+// TODO: UART3_TX, UART3_RX in sch are not UART pins(but GPIO)
+
 // TODO: check pin net
 #define EXT_GPIO1     PIN_PG5
 #define EXT_GPIO2     PIN_PE3
