@@ -18,13 +18,14 @@
 #define RS_ECHO3      PIN_PD2
 #define RS_ECHO4      PIN_PD0
 
-#define USER_485_TX   PIN_PK1
-#define USER_485_RX   PIN_PK0
+#define USER_485_TX   PIN_PJ1
+#define USER_485_RX   PIN_PJ0
 #define USER_485_DIR  PIN_PL6
 
 #define IMU_NCS       PIN_PB0
 #define IMU_INT       PIN_PD3
 
+// TODO: check pin net
 #define EXT_GPIO1     PIN_PG5
 #define EXT_GPIO2     PIN_PE3
 #define EXT_GPIO3     PIN_PH3
@@ -41,6 +42,14 @@
 #define EXT_GPIO14    PIN_PA5
 #define EXT_GPIO15    PIN_PA6
 #define EXT_GPIO16    PIN_PA7
+#define EXT2_GPIO1    PIN_PC0
+#define EXT2_GPIO1    PIN_PC1
+#define EXT2_GPIO1    PIN_PC2
+#define EXT2_GPIO1    PIN_PC3
+#define EXT3_GPIO1    PIN_PC4
+#define EXT3_GPIO1    PIN_PC5
+#define EXT3_GPIO1    PIN_PC6
+#define EXT3_GPIO1    PIN_PC7
 #define EXT_ADC1      PIN_PF0
 #define EXT_ADC2      PIN_PF1
 #define EXT_ADC3      PIN_PF2
