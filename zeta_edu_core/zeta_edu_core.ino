@@ -16,7 +16,7 @@ void setup()
 void InitIMU()
 {
     int status = IMU.begin();
-    IMU.setDlpfBandwidth(MPU9250::DLPF_BANDWIDTH_20HZ);
+    IMU.setDlpfBandwidth(ICM20689::DLPF_BANDWIDTH_21HZ);
     IMU.setSrd(19);    // hz = 1k / (1 + srd)
     IMU.enableDataReadyInterrupt();
     pinMode(IMU_INT, INPUT);

@@ -5,7 +5,7 @@
 
 #include "src/configuration/pin_definition.h"
 
-#include "src/imu/MPU9250.h"
+#include "src/imu/ICM20689.h""
 #include "src/imu/MadgwickFilter.h"
 #include <ros.h>
 #include <sensor_msgs/Imu.h>
@@ -41,7 +41,7 @@ enum
     task_num_pub_line_detection,
 };
 
-MPU9250 IMU(SPI, IMU_NCS);
+ICM20689 IMU(SPI, IMU_NCS);
 Madgwick filter;
 
 ros::NodeHandle nh;
