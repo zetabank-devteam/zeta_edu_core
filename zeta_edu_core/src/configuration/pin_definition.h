@@ -45,13 +45,13 @@
 #define EXT_GPIO15    PIN_PA6
 #define EXT_GPIO16    PIN_PA7
 #define EXT2_GPIO1    PIN_PC0
-#define EXT2_GPIO1    PIN_PC1
-#define EXT2_GPIO1    PIN_PC2
-#define EXT2_GPIO1    PIN_PC3
+#define EXT2_GPIO2    PIN_PC1
+#define EXT2_GPIO3    PIN_PC2
+#define EXT2_GPIO4    PIN_PC3
 #define EXT3_GPIO1    PIN_PC4
-#define EXT3_GPIO1    PIN_PC5
-#define EXT3_GPIO1    PIN_PC6
-#define EXT3_GPIO1    PIN_PC7
+#define EXT3_GPIO2    PIN_PC5
+#define EXT3_GPIO3    PIN_PC6
+#define EXT3_GPIO4    PIN_PC7
 #define EXT_ADC1      PIN_PF0
 #define EXT_ADC2      PIN_PF1
 #define EXT_ADC3      PIN_PF2
@@ -61,8 +61,8 @@
 #define EXT_PWM3      PIN_PF6
 #define EXT_PWM4      PIN_PF7
 
-#define LINE_DETECT1  EXT_GPIO3
-#define LINE_DETECT2  EXT_GPIO5
-#define LINE_DETECT3  EXT_GPIO7
-#define LINE_DETECT4  EXT_GPIO9
+#define LINE_DETECT1  EXT2_GPIO1
+#define LINE_DETECT2  EXT2_GPIO2
+#define LINE_DETECT3  EXT2_GPIO3
+#define LINE_DETECT4  EXT2_GPIO4
 #endif /* ZETA_EDU_CORE_PIN_DEFINITION_H_ */
