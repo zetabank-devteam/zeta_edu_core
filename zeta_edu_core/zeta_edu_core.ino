@@ -1,13 +1,4 @@
 #include "zeta_edu_core.h"
-// 485 class
-// Dip switch
-// exteral gpio definition
-// battery?
-// sonar trigger & measure
-// sonar publish
-// user led class
-// user switch class
-// #define NO_ROS
 // 20211118 Ahn, for increasing imu publishing hz, must expand tx buffer size of arduino serial driver
 // C:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\HardwareSerial.h SERIAL_TX_BUFFER_SIZE
 void setup()
@@ -15,11 +6,8 @@ void setup()
     InitGPIO();
     InitIMU();
     InitSonar();
-#ifdef NO_ROS
     InitSerial();
-#else
     InitROS();
-#endif
 }
 
 ////////////////////////////////
@@ -28,7 +16,7 @@ void setup()
 void InitIMU()
 {
     int status = IMU.begin();
-    IMU.setDlpfBandwidth(MPU9250::DLPF_BANDWIDTH_20HZ);
+    IMU.setDlpfBandwidth(ICM20689::DLPF_BANDWIDTH_21HZ);
     IMU.setSrd(19);    // hz = 1k / (1 + srd)
     IMU.enableDataReadyInterrupt();
     pinMode(IMU_INT, INPUT);
@@ -90,9 +78,10 @@ void InitROS()
 
 void InitSerial()
 {
+#ifdef NO_ROS
     Serial.begin(SERIAL_SPEED);
+#endif
     Serial2.begin(SERIAL2_SPEED);
-    Serial3.begin(SERIAL3_SPEED);
     RS485.begin(RS485_SPEED);
 }
 
@@ -135,7 +124,7 @@ void ISR_SONAR4()
     SonarHandler(pin_state, 3);
 }
 
-inline void SonarHandler(bool pinState, int nIRQ)
+inline __attribute__((always_inline)) void SonarHandler(bool pinState, int nIRQ)
 {
     unsigned long time_cur = micros();  // Get current time (in µs)
     if (pinState)
@@ -172,106 +161,15 @@ void MeasureDistance()
 
 void SendSonar()
 {
-#ifdef NO_ROS
-    uint8_t tx_data[TX_MAX_SIZE] = {0,};
-    int tx_index = 0;
-    int i = 0;
-    tx_data[tx_index++] = START_BYTE1;
-    tx_data[tx_index++] = START_BYTE2;
-    tx_data[tx_index++] = SONAR_DATA_LENGTH;
-    tx_data[tx_index++] = static_cast<uint8_t>(ParameterID::pid_sonar);
-    noInterrupts();
-    for(int j = 0; j < NUM_SONAR; j++)
-    {
-        FloatToBytes.num = distance[j];
-        for(i = 0; i < 4; i++)
-        {
-            tx_data[tx_index++] = FloatToBytes.bytes[i];
-        }
-    }
-    interrupts();
-    tx_data[tx_index] = Checksum(tx_data, tx_index);
-    tx_index++;
-    tx_data[tx_index++] = END_BYTE1;
-    tx_data[tx_index++] = END_BYTE2;
-    Serial.write(tx_data, tx_index);
-#else
     for(int i = 0; i < NUM_SONAR; i++)
     {
         sonar_msg.data[i] = distance[i]; 
     }
     sonar_publisher.publish(&sonar_msg);
-#endif
 }
 
 void SendImu()
 {
-#ifdef NO_ROS
-    uint8_t tx_data[TX_MAX_SIZE] = {0,};
-    int tx_index = 0;
-    int i = 0;
-    tx_data[tx_index++] = START_BYTE1;
-    tx_data[tx_index++] = START_BYTE2;
-    tx_data[tx_index++] = IMU_DATA_LENGTH;
-    tx_data[tx_index++] = static_cast<uint8_t>(ParameterID::pid_imu);
-    noInterrupts();
-    FloatToBytes.num = IMU.getAccelX_mss();
-    for(i = 0; i < 4; i++)
-    {
-        tx_data[tx_index++] = FloatToBytes.bytes[i];
-    }
-    FloatToBytes.num = IMU.getAccelY_mss();
-    for(i = 0; i < 4; i++)
-    {
-        tx_data[tx_index++] = FloatToBytes.bytes[i];
-    }
-    FloatToBytes.num = IMU.getAccelZ_mss();
-    for(i = 0; i < 4; i++)
-    {
-        tx_data[tx_index++] = FloatToBytes.bytes[i];
-    }
-    FloatToBytes.num = IMU.getGyroX_rads();
-    for(i = 0; i < 4; i++)
-    {
-        tx_data[tx_index++] = FloatToBytes.bytes[i];
-    }
-    FloatToBytes.num = IMU.getGyroY_rads();
-    for(i = 0; i < 4; i++)
-    {
-        tx_data[tx_index++] = FloatToBytes.bytes[i];
-    }
-    FloatToBytes.num = IMU.getGyroZ_rads();
-    for(i = 0; i < 4; i++)
-    {
-        tx_data[tx_index++] = FloatToBytes.bytes[i];
-    }
-    FloatToBytes.num = filter.q0;
-    for(i = 0; i < 4; i++)
-    {
-        tx_data[tx_index++] = FloatToBytes.bytes[i];
-    }
-    FloatToBytes.num = filter.q1;
-    for(i = 0; i < 4; i++)
-    {
-        tx_data[tx_index++] = FloatToBytes.bytes[i];
-    }
-    FloatToBytes.num = filter.q2;
-    for(i = 0; i < 4; i++)
-    {
-        tx_data[tx_index++] = FloatToBytes.bytes[i];
-    }
-    FloatToBytes.num = filter.q3;
-    for(i = 0; i < 4; i++)
-    {
-        tx_data[tx_index++] = FloatToBytes.bytes[i];
-    }
-    interrupts();
-    tx_data[tx_index] = Checksum(tx_data, tx_index);
-    tx_index++;
-    tx_data[tx_index++] = END_BYTE1;
-    tx_data[tx_index++] = END_BYTE2;
-    Serial.write(tx_data, tx_index);
-#else
     imu_msg.header.stamp = nh.now();
     imu_msg.orientation.w = filter.q0;
     imu_msg.orientation.x = filter.q1;
@@ -281,15 +179,10 @@ void SendImu()
     imu_msg.angular_velocity.x = IMU.getGyroX_rads();
     imu_msg.angular_velocity.y = IMU.getGyroY_rads();
     imu_msg.angular_velocity.z = IMU.getGyroZ_rads();
-    // imu_msg.linear_acceleration.x = IMU.getAccelX_mss();
-    // imu_msg.linear_acceleration.y = IMU.getAccelY_mss();
-    // imu_msg.linear_acceleration.z = IMU.getAccelZ_mss();
     imu_msg.linear_acceleration.x = 0.0f;
     imu_msg.linear_acceleration.y = 0.0f;
     imu_msg.linear_acceleration.z = 9.80665f;
-    
     imu_publisher.publish(&imu_msg);
-#endif
 }
 
 void PublishVersionInfo()
@@ -305,38 +198,10 @@ void PublishLineDetection()
 
 void DetectLine()
 {
-    if(digitalRead(LINE_DETECT1))
-    {
-        line_detector_msg.data[0] = 1;
-    }
-    else
-    {
-        line_detector_msg.data[0] = 0;
-    }
-    if(digitalRead(LINE_DETECT2))
-    {
-        line_detector_msg.data[1] = 1;
-    }
-    else
-    {
-        line_detector_msg.data[1] = 0;
-    }
-    if(digitalRead(LINE_DETECT3))
-    {
-        line_detector_msg.data[2] = 1;
-    }
-    else
-    {
-        line_detector_msg.data[2] = 0;
-    }
-    if(digitalRead(LINE_DETECT4))
-    {
-        line_detector_msg.data[3] = 1;
-    }
-    else
-    {
-        line_detector_msg.data[3] = 0;
-    }
+    digitalRead(LINE_DETECT1)? line_detector_msg.data[0] = 1 : line_detector_msg.data[0] = 0;
+    digitalRead(LINE_DETECT2)? line_detector_msg.data[1] = 1 : line_detector_msg.data[1] = 0;
+    digitalRead(LINE_DETECT3)? line_detector_msg.data[2] = 1 : line_detector_msg.data[2] = 0;
+    digitalRead(LINE_DETECT4)? line_detector_msg.data[3] = 1 : line_detector_msg.data[3] = 0;
 }
 
 void BlinkLed1()
@@ -362,19 +227,6 @@ void PrintBtnState()
 void ToggleComIndicator()
 {
    digitalWrite(COM_IND, !digitalRead(COM_IND));
-}
-
-////////////////////////////////
-// other functions
-////////////////////////////////
-uint8_t Checksum(uint8_t data[], int length)
-{
-    uint16_t sum = 0;
-    for(int i = POS_LENGTH; i < length; i++)
-    {
-        sum += data[i];
-    }
-    return sum & 0xFF;
 }
 
 ////////////////////////////////

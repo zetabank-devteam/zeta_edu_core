@@ -1,19 +1,17 @@
 #ifndef ZETA_EDU_CORE_ZETA_EDU_CORE_H_
 #define ZETA_EDU_CORE_ZETA_EDU_CORE_H_
-#define HW_VERSION "R0.1"
-#define FW_VERSION "0.1.2"
+#define HW_VERSION "R0.2"
+#define FW_VERSION "0.2.0"
 
 #include "src/configuration/pin_definition.h"
 
-#include "src/imu/MPU9250.h"
+#include "src/imu/ICM20689.h""
 #include "src/imu/MadgwickFilter.h"
 #include <ros.h>
 #include <sensor_msgs/Imu.h>
 #include <std_msgs/Float32MultiArray.h>
 #include <std_msgs/String.h>
 #include <std_msgs/UInt8MultiArray.h>
-
-#include <SoftwareSerial.h>
 
 #define NUMBER_OF_TASK  6
 
@@ -26,28 +24,13 @@
 #define ROS_SERIAL_SPEED  115200
 #define SERIAL_SPEED      115200
 #define SERIAL2_SPEED     115200
-#define SERIAL3_SPEED     115200
 #define RS485_SPEED       9600
-
-#define TX_MAX_SIZE        64
-#define POS_LENGTH         2
-#define START_BYTE1        0xAA
-#define START_BYTE2        0xBB
-#define END_BYTE1          0xDD
-#define END_BYTE2          0x55
-#define IMU_DATA_LENGTH    41
-#define SONAR_DATA_LENGTH  17
 
 #define NUM_SONAR       4
 #define MAX_DISTANCE    70.0f
 #define SPEED_OF_SOUND  343.0f
 #define NUM_LINE_DETECTOR  4
-
-union
-{
-    float   num;
-    uint8_t bytes[4];
-}FloatToBytes;  // little endian
+#define RS485              Serial3
 
 enum
 {
@@ -58,17 +41,7 @@ enum
     task_num_pub_line_detection,
 };
 
-enum class ParameterID : uint8_t
-{
-    pid_monitoring = 0,
-    pid_set_velocity,
-    pid_imu = 61,
-    pid_sonar,
-    pid_last,
-};
-
-SoftwareSerial RS485(USER_485_RX, USER_485_TX);
-MPU9250 IMU(SPI, IMU_NCS);
+ICM20689 IMU(SPI, IMU_NCS);
 Madgwick filter;
 
 ros::NodeHandle nh;
