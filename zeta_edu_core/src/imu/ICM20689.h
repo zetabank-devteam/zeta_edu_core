@@ -86,6 +86,7 @@ class ICM20689{
     void setAccelCalX(double bias,double scaleFactor);
     void setAccelCalY(double bias,double scaleFactor);
     void setAccelCalZ(double bias,double scaleFactor);
+    bool GetGyroCalibrated() { return gyro_calibrated;}
   protected:
     // i2c
     uint8_t _address = 0;
@@ -124,6 +125,7 @@ class ICM20689{
     GyroRange _gyroRange;
     DlpfBandwidth _bandwidth;
     uint8_t _srd = 0;
+    bool gyro_calibrated;
     // gyro bias estimation
     size_t _numSamples = 100;
     double _gyroBD[3] = {};

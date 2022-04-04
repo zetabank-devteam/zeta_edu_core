@@ -13,6 +13,7 @@ ICM20689::ICM20689(SPIClass &bus,uint8_t csPin){
   _spi = &bus; // SPI bus
   _csPin = csPin; // chip select pin
   _useSPI = true; // set to use SPI
+  gyro_calibrated = false;
 }
 
 /* starts communication with the ICM20689 */
@@ -355,6 +356,12 @@ int ICM20689::readSensor() {
   _gyro[0] = ((double)(tX[0]*_gyroCounts[0] + tX[1]*_gyroCounts[1] + tX[2]*_gyroCounts[2]) * _gyroScale) - _gyroB[0];
   _gyro[1] = ((double)(tY[0]*_gyroCounts[0] + tY[1]*_gyroCounts[1] + tY[2]*_gyroCounts[2]) * _gyroScale) - _gyroB[1];
   _gyro[2] = ((double)(tZ[0]*_gyroCounts[0] + tZ[1]*_gyroCounts[1] + tZ[2]*_gyroCounts[2]) * _gyroScale) - _gyroB[2];
+  if(gyro_calibrated)
+  {
+    if(fabs(_gyro[0]) < 0.01f) _gyro[0] = 0.0f;
+    if(fabs(_gyro[1]) < 0.01f) _gyro[1] = 0.0f;
+    if(fabs(_gyro[2]) < 0.01f) _gyro[2] = 0.0f;
+  }
   return 1;
 }
 
@@ -507,6 +514,7 @@ int ICM20689::calibrateGyro() {
   if (setSrd(_srd) < 0) {
     return -6;
   }
+  gyro_calibrated = true;
   return 1;
 }
 
