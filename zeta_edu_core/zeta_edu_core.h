@@ -1,6 +1,6 @@
 #ifndef ZETA_EDU_CORE_ZETA_EDU_CORE_H_
 #define ZETA_EDU_CORE_ZETA_EDU_CORE_H_
-#define HW_VERSION "R0.2"
+#define HW_VERSION "R0.2" // RT_MOTOR_DRIVER_2ND
 #define FW_VERSION "0.2.0"
 
 #include "src/configuration/pin_definition.h"
